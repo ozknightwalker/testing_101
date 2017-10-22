@@ -42,7 +42,7 @@ class Entry(models.Model):
     video = models.FileField(upload_to='/media/video/',
                              max_length=256, blank=True)
     # sample custom model manager
-    objects = EntryModelManager
+    objects = EntryModelManager()
 
     def __unicode__(self):
         return '{0} - {1}'.format(self.title, self.owner)

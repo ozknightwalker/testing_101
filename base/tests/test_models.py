@@ -1,6 +1,10 @@
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
+from django.utils import timezone
+
+from base.models import Profile, Entry
 
 # if you want to override something from the settings.py you can use the
 # override_settings decorator to do so
@@ -29,7 +33,8 @@ class ProfileModelTestCase(TestCase):
     # the method called first before running a test, think of it like a
     # constructor
     def setUp(self):
-        pass
+        self.user = User.objects.create_user(username='test', password='test')
+        self.profile = Profile.objects.create(owner=self.user)
 
     # the method called everytime a test definition is done, think of it as a
     # cleanup method
@@ -37,31 +42,54 @@ class ProfileModelTestCase(TestCase):
         pass
 
     def test_age(self):
-        pass
+        expected = None
+        time = timezone.now()
+        self.assertEquals(self.profile.age, expected)
+        expected = 25  # years
+        days = (expected + 1) * 356
+        self.profile.birthdate = time - timezone.timedelta(days=days)
+        self.profile.save()
+        self.assertEqual(self.profile.age, expected)
 
     def test_unicode(self):
-        pass
+        expected = '\'s profile'.format(self.profile.full_name)
+        self.assertEquals(self.profile.__unicode__(), expected)
+        self.profile.full_name = 'Test'
+        expected = '{0}\'s profile'.format(self.profile.full_name)
+        self.assertEquals(self.profile.__unicode__(), expected)
 
 
 class EntryModelManagerTestCase(TestCase):
 
     def setUp(self):
-        pass
+        self.user = User.objects.create_user(username='test', password='test')
+
+    def create_entries(self, range):
+        for x in xrange(range):
+            Entry.objects.create(owner=self.user, title='testing-{}'.format(x))
 
     def tearDown(self):
         pass
 
     def test_owned(self):
-        pass
+        expected = 0
+        self.assertEquals(
+            Entry.objects.owned(owner=self.user).count(), expected)
+        expected = 9
+        self.create_entries(expected)
+        self.assertEquals(
+            Entry.objects.owned(owner=self.user).count(), expected)
 
 
 class EntryModelTestCase(TestCase):
 
     def setUp(self):
-        pass
+        self.user = User.objects.create_user(username='test', password='test')
+        self.entry = Entry.objects.create(owner=self.user, title='testing')
 
     def tearDown(self):
         pass
 
     def test_unicode(self):
-        pass
+        expected = '{0} - {1}'.format('testing', self.user)
+        self.assertEquals(self.entry.__unicode__(), expected)
