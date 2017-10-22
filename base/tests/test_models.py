@@ -1,10 +1,13 @@
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from base.models import Profile, Entry
+from base.tests.factories.profile import ProfileFactory
+from base.tests.factories.user import UserFactory
+from base.tests.factories.entry import EntryFactory
 
 # if you want to override something from the settings.py you can use the
 # override_settings decorator to do so
@@ -33,8 +36,9 @@ class ProfileModelTestCase(TestCase):
     # the method called first before running a test, think of it like a
     # constructor
     def setUp(self):
-        self.user = User.objects.create_user(username='test', password='test')
-        self.profile = Profile.objects.create(owner=self.user)
+        # self.user = User.objects.create_user(username='test', password='test')
+        # self.profile = Profile.objects.create(owner=self.user)
+        self.profile = ProfileFactory(full_name='')
 
     # the method called everytime a test definition is done, think of it as a
     # cleanup method
@@ -62,11 +66,12 @@ class ProfileModelTestCase(TestCase):
 class EntryModelManagerTestCase(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='test', password='test')
+        self.user = UserFactory()
 
     def create_entries(self, range):
-        for x in xrange(range):
-            Entry.objects.create(owner=self.user, title='testing-{}'.format(x))
+        # for x in xrange(range):
+        #     Entry.objects.create(owner=self.user, title='testing-{}'.format(x))
+        EntryFactory.create_batch(range, owner=self.user)
 
     def tearDown(self):
         pass
@@ -84,12 +89,15 @@ class EntryModelManagerTestCase(TestCase):
 class EntryModelTestCase(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='test', password='test')
-        self.entry = Entry.objects.create(owner=self.user, title='testing')
+        # self.user = User.objects.create_user(username='test', password='test')
+        # self.entry = Entry.objects.create(owner=self.user, title='testing')
+        self.title = 'testing'
+        self.entry = EntryFactory(title=self.title)
+        self.user = self.entry.owner
 
     def tearDown(self):
         pass
 
     def test_unicode(self):
-        expected = '{0} - {1}'.format('testing', self.user)
+        expected = '{0} - {1}'.format(self.title, self.user)
         self.assertEquals(self.entry.__unicode__(), expected)
