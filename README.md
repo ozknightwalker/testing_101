@@ -6,6 +6,30 @@ contains total or four(4) branches that would demonstrate how to use:
 * testing with mock
 * testing with coverage
 
+## instruction
+1. install the requirements by
+```
+pip install -r requirements.txt
+```
+or you can just install
+* django 1.8
+* request
+* factory_boy
+* mock
+2. switch to the branch that you want to explore by
+```
+	git checkout {name of the branch}
+```
+3. run the django test management command
+```
+	python manage.py test
+```
+* to run the coverage command in `step-4-coverage` branch run this command
+```
+	run_coverage
+```
+
+
 
 ## basic unittest
 a very basic tutorial on how to use/create a unittest, the setUps, and tearDowns.
