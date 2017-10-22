@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+export OMITS="manage.py,**/migrations/*"
+coverage run --source='.' --omit=$OMITS manage.py test
+coverage report
+coverage html -d ./docs/coverage
+xdg-open ./docs/coverage/index.html
